@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="bgTLy6" name="BLOB-Plugin" projectType="audioplug" jucerVersion="5.4.3"
               companyName="XenDevs" companyWebsite="https://github.com/xenharmonic-devs"
-              pluginCharacteristicsValue="pluginEditorRequiresKeys,pluginProducesMidiOut,pluginWantsMidiIn"
+              pluginCharacteristicsValue="pluginEditorRequiresKeys,pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginAUMainType="'aumi'" pluginVST3Category="Analyzer,OnlyOfflineProcess,Tools">
   <MAINGROUP id="YqYzL7" name="BLOB-Plugin">
     <GROUP id="{195A9A18-807A-E232-84F3-A4BFD0339ED5}" name="Resources">

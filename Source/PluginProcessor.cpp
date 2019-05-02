@@ -36,7 +36,7 @@ BlobpluginAudioProcessor::~BlobpluginAudioProcessor()
 
 MidiKeyboardState* BlobpluginAudioProcessor::getKeyboardState()
 {
-	return &keyboardState;
+	return keyboardState.get();
 }
 
 PluginState* BlobpluginAudioProcessor::getPluginState()
@@ -152,11 +152,8 @@ void BlobpluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuff
 
 	while (midiEvent.getNextEvent(msg, smpl))
 	{
-		keyboardState.processNextMidiEvent(msg);
+		keyboardState->processNextMidiEvent(msg);
 	}
-
-	midiMessages.addEvents(midiBuffer, 0, -1, 0);
-	midiBuffer.clear();
 }
 
 //==============================================================================
