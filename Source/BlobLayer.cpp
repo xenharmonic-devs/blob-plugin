@@ -26,6 +26,7 @@ Blob* BlobLayer::addBlob(Blob* blobIn)
 {
 	Blob* blobAdded = blobs.add(blobIn);
 
+	blobAdded->setName("Blob " + String(blobAdded->getCenterPosition().toString()));
 	addAndMakeVisible(blobAdded);
 	changeSelection(blobAdded);
 
@@ -75,10 +76,15 @@ int BlobLayer::getNumBlobs()
 
 void BlobLayer::triggerNoteOn(int midiChannel, int midiNoteNumber, float velocity)
 {
-	for (auto blob : blobs)
+	Blob* blob;
+
+	for (int i = 0; i < blobs.size(); i++)
 	{
+		blob = blobs.getUnchecked(i);
+;
 		if (blob->getMidiNote() == midiNoteNumber)
 		{
+			DBG("Found matching blob");
 			blob->setOn();
 			blob->repaint();
 		}
@@ -87,8 +93,12 @@ void BlobLayer::triggerNoteOn(int midiChannel, int midiNoteNumber, float velocit
 
 void BlobLayer::triggerNoteOff(int midiChannel, int midiNoteNumber, float velocity)
 {
-	for (auto blob : blobs)
+	Blob* blob;
+
+	for (int i = 0; i < blobs.size(); i++)
 	{
+		blob = blobs.getUnchecked(i);
+
 		if (blob->getMidiNote() == midiNoteNumber)
 		{
 			blob->setOn(false);

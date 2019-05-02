@@ -17,16 +17,25 @@ BlobpluginAudioProcessorEditor::BlobpluginAudioProcessorEditor (BlobpluginAudioP
 {
 	pluginState = processor.getPluginState();
 	latticeImage = pluginState->getLatticeImage();
-	blobLayer = pluginState->getBlobLayer();
 
-	addAndMakeVisible(blobLayer);
+
+	loadImageBtn.reset(new TextButton("Load Image Button"));
+	addAndMakeVisible(loadImageBtn.get());
+	loadImageBtn->setButtonText("Load Image");
+	loadImageBtn->setSize(133, 65);
+	loadImageBtn->addListener(this);
+	
+
+	blobLayer = pluginState->getBlobLayer();
+	addChildComponent(blobLayer);
+
 
 	processor.getKeyboardState()->addListener(this);
 	addMouseListener(this, true);
 
 	setRepaintsOnMouseActivity(true);
 
-    setSize (latticeImage->getImage().getWidth(), latticeImage->getImage().getHeight());
+    setSize (800, 500);
 }
 
 BlobpluginAudioProcessorEditor::~BlobpluginAudioProcessorEditor()
@@ -34,66 +43,98 @@ BlobpluginAudioProcessorEditor::~BlobpluginAudioProcessorEditor()
 	processor.getKeyboardState()->removeListener(this);
 }
 
+void BlobpluginAudioProcessorEditor::setPlayMode()
+{
+	loadImageBtn->setVisible(false);
+	blobLayer->setVisible(true);
+}
+
+void BlobpluginAudioProcessorEditor::setLoadMode()
+{
+	loadImageBtn->setVisible(true);
+	blobLayer->setVisible(false);
+}
+
+
 //==============================================================================
 void BlobpluginAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 
-	g.drawImage(latticeImage->getImage(), getBounds().toFloat());
+	if (latticeImage->getImage().isValid())
+	{
+		g.drawImage(latticeImage->getImage(), getBounds().toFloat());
+	}
 }
 
 void BlobpluginAudioProcessorEditor::resized()
 {
 	latticeImage->setBounds(getBounds());
 	blobLayer->setBounds(getBounds());
+	loadImageBtn->setCentrePosition(getWidth() / 2, getHeight() / 2);
 }
 
 //==============================================================================
 
 void BlobpluginAudioProcessorEditor::mouseDown(const MouseEvent& e)
 {
-	Blob* clickedBlob = dynamic_cast<Blob*>(e.eventComponent);
+	if (latticeImage->getImage().isValid())
+	{
+		Blob* clickedBlob = dynamic_cast<Blob*>(e.eventComponent);
 
-	if (!e.mods.isRightButtonDown())
-	{
-		if (!clickedBlob)
-			blobLayer->addBlob(e.mouseDownPosition, 10, Colours::green);
+		if (!e.mods.isRightButtonDown())
+		{
+			if (!clickedBlob)
+				blobLayer->addBlob(e.mouseDownPosition, 10, Colours::green);
+			else
+				blobLayer->changeSelection(clickedBlob);
+		}
 		else
+		{
+			blobLayer->removeBlob(clickedBlob);
 			blobLayer->changeSelection(clickedBlob);
+		}
+		blobLayer->repaint();
+		DBG(blobLayer->getNumBlobs());
 	}
-	else
+
+	if (loadImageBtn->isMouseOver())
 	{
-		blobLayer->removeBlob(clickedBlob);
-		blobLayer->changeSelection(clickedBlob);
+		loadImageBtn->triggerClick();
 	}
-	blobLayer->repaint();
-	DBG(blobLayer->getNumBlobs());
 }
 
 //==============================================================================
 
-void BlobpluginAudioProcessorEditor::timerCallback()
+void BlobpluginAudioProcessorEditor::buttonClicked(Button* buttonClicked)
 {
-	
+	if (buttonClicked == loadImageBtn.get())
+	{
+		if (latticeImage->browseAndLoad())
+		{
+			setPlayMode();
+		}
+	}
 }
 
 
 void BlobpluginAudioProcessorEditor::handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
 	Blob* blobToMap = blobLayer->getSelection();
-
+	
+	DBG("On" + String(midiNoteNumber));
 	if (blobToMap)
 	{
+		DBG("mapping blob");
 		blobToMap->setMidiNote(midiNoteNumber);
 	}
 
 	blobLayer->triggerNoteOn(midiChannel, midiNoteNumber, velocity);
-	DBG("On" + midiNoteNumber);
 }
 
 void BlobpluginAudioProcessorEditor::handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
+	DBG("Off" + String(midiNoteNumber));
 	blobLayer->triggerNoteOff(midiChannel, midiNoteNumber, velocity);
-	DBG("Off" + midiNoteNumber);
 }

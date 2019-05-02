@@ -45,7 +45,7 @@ Point<float> Blob::getCenterPosition()
 	return Point<float>(getX() + radius, getY() + radius);
 }
 
-bool Blob::getMidiNote()
+int Blob::getMidiNote()
 {
 	return midiNote;
 }
@@ -67,11 +67,17 @@ bool Blob::isPlaced()
 
 void Blob::setMidiNote(int noteIn)
 {
+	DBG("I'm a blob getting mapped to " + String(noteIn));
 	midiNote = noteIn;
 }
 
 void Blob::setOn(bool isOnIn)
 {
+	if (isOnIn)
+		DBG("Woo i'm on!");
+	else
+		DBG("Darn I'm off.");
+
 	on = isOnIn;
 }
 

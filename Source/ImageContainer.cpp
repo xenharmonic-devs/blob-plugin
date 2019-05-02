@@ -12,19 +12,14 @@
 
 
 ImageContainer::ImageContainer(String name)
-	: fileChooser(new FileChooser("Choose an image...", File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory), 
-		String("*.jpg; *.jpeg; *.png; *.gif")))
 {
-	fileChooser->browseForFileToOpen();
-	
-	if (loadFile(fileChooser->getResult()))
-	{
-		ImageComponent::setImage(theImage);
-	}
+	setName(name);
 }
 
 ImageContainer::ImageContainer(String name, File fileIn)
 {
+	setName(name);
+
 	if (loadFile(fileIn))
 	{
 		ImageComponent::setImage(theImage);
@@ -34,6 +29,21 @@ ImageContainer::ImageContainer(String name, File fileIn)
 ImageContainer::~ImageContainer()
 {
 
+}
+
+bool ImageContainer::browseAndLoad()
+{
+	fileChooser.reset(new FileChooser("Choose an image...", File::getSpecialLocation(File::SpecialLocationType::userDocumentsDirectory),
+		String("*.jpg; *.jpeg; *.png; *.gif")));
+
+	fileChooser->browseForFileToOpen();
+
+	if (loadFile(fileChooser->getResult()))
+	{
+		ImageComponent::setImage(theImage);
+		return true;
+	}
+	return false;
 }
 
 bool ImageContainer::loadFile(File fileIn)

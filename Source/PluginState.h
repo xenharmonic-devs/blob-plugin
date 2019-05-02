@@ -12,11 +12,15 @@ class PluginState
 	std::unique_ptr<ImageContainer> latticeImage;
 	std::unique_ptr<BlobLayer> blobLayer;
 
+	MidiKeyboardState keyboardState;
+
 public:
 	PluginState();
 	~PluginState();
 
 	ImageContainer* getLatticeImage();
 	BlobLayer* getBlobLayer();
+
+	MidiKeyboardState* getKeyboardState();
 };
 

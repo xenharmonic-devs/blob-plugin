@@ -33,5 +33,6 @@ public:
 	~ImageContainer();
 
 	bool loadFile(File fileIn);
+	bool browseAndLoad();
 
 };

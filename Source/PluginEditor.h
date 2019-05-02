@@ -20,11 +20,16 @@
 */
 class BlobpluginAudioProcessorEditor  : public AudioProcessorEditor,
 										private MidiKeyboardStateListener,
-										private Timer
+										private Button::Listener
 {
 public:
     BlobpluginAudioProcessorEditor (BlobpluginAudioProcessor&);
     ~BlobpluginAudioProcessorEditor();
+
+	//==============================================================================
+
+	void setPlayMode();
+	void setLoadMode();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -35,12 +40,17 @@ public:
 	void mouseDown(const MouseEvent& e) override;
 
 	//==============================================================================
-	void timerCallback() override;
 
 	void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity);
 	void handleNoteOff(MidiKeyboardState* source,int midiChannel, int midiNoteNumber, float velocity);
 
+	//==============================================================================
+
+	void buttonClicked(Button* buttonClicked) override;
+
 private:
+
+	std::unique_ptr<TextButton> loadImageBtn;
     
 	BlobpluginAudioProcessor& processor;
 	PluginState* pluginState;

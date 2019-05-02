@@ -31,7 +31,7 @@ public:
 	Blob(Blob& blobToCopy);
 	
 	Point<float> getCenterPosition();
-	bool getMidiNote();
+	int getMidiNote();
 	bool isOn();
 	bool isSelected();
 	bool isPlaced();

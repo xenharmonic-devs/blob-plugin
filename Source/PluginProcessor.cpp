@@ -25,6 +25,7 @@ BlobpluginAudioProcessor::BlobpluginAudioProcessor()
 	pluginState(new PluginState())
 #endif
 {
+	keyboardState = pluginState->getKeyboardState();
 }
 
 BlobpluginAudioProcessor::~BlobpluginAudioProcessor()
@@ -36,7 +37,7 @@ BlobpluginAudioProcessor::~BlobpluginAudioProcessor()
 
 MidiKeyboardState* BlobpluginAudioProcessor::getKeyboardState()
 {
-	return keyboardState.get();
+	return keyboardState;
 }
 
 PluginState* BlobpluginAudioProcessor::getPluginState()
@@ -145,15 +146,17 @@ bool BlobpluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void BlobpluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-
 	auto midiEvent = MidiBuffer::Iterator(midiMessages);
 	MidiMessage msg;
 	int smpl;
-
+	
 	while (midiEvent.getNextEvent(msg, smpl))
 	{
 		keyboardState->processNextMidiEvent(msg);
 	}
+
+	midiMessages.addEvents(midiBuffer, 0, -1, 0);
+	midiBuffer.clear();
 }
 
 //==============================================================================
