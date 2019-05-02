@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="bgTLy6" name="BLOB-Plugin" projectType="audioplug" jucerVersion="5.4.3">
+<JUCERPROJECT id="bgTLy6" name="BLOB-Plugin" projectType="audioplug" jucerVersion="5.4.3"
+              companyName="XenDevs" companyWebsite="https://github.com/xenharmonic-devs"
+              pluginCharacteristicsValue="pluginEditorRequiresKeys,pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
+              pluginAUMainType="'aumi'" pluginVST3Category="Analyzer,OnlyOfflineProcess,Tools">
   <MAINGROUP id="YqYzL7" name="BLOB-Plugin">
     <GROUP id="{195A9A18-807A-E232-84F3-A4BFD0339ED5}" name="Resources">
       <FILE id="mYVPeO" name="banglattice.jpg" compile="0" resource="1" file="Resources/banglattice.jpg"/>

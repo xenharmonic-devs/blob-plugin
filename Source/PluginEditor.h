@@ -19,7 +19,8 @@
 /**
 */
 class BlobpluginAudioProcessorEditor  : public AudioProcessorEditor,
-										private MidiKeyboardStateListener
+										private MidiKeyboardStateListener,
+										private Timer
 {
 public:
     BlobpluginAudioProcessorEditor (BlobpluginAudioProcessor&);
@@ -30,6 +31,11 @@ public:
     void resized() override;
 
 	//==============================================================================
+		
+	void mouseDown(const MouseEvent& e) override;
+
+	//==============================================================================
+	void timerCallback() override;
 
 	void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity);
 	void handleNoteOff(MidiKeyboardState* source,int midiChannel, int midiNoteNumber, float velocity);

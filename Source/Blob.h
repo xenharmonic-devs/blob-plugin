@@ -18,16 +18,28 @@ class Blob : public Component
 	Point<float> center;
 	float radius;
 	Colour color;
+	int midiNote = -1;
 
-	int midiNote;
+	bool on = false;
+	bool selected = false;
+	bool placed = false;
 	
 public:
 
+	Blob();
 	Blob(Point<float> centerIn, float radiusIn, Colour colorIn = Colours::yellow);
+	Blob(Blob& blobToCopy);
 	
 	Point<float> getCenterPosition();
+	bool getMidiNote();
+	bool isOn();
+	bool isSelected();
+	bool isPlaced();
 
 	void setMidiNote(int noteIn);
+	void setOn(bool isOnIn = true);
+	void setSelected(bool selectionIn = true);
+	void setPlaced(bool placedIn = true);
 
 	void paint(Graphics& g) override;
 	void resized() override;
