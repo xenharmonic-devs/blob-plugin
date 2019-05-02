@@ -18,6 +18,9 @@ class BlobLayer : public Component
 
 	OwnedArray<Blob> blobs;
 	Array<Point<float>> blobPositions;
+	Blob dummy = Blob();
+
+	Blob* blobSelected = &dummy;
 
 public:
 
@@ -26,6 +29,16 @@ public:
 
 	Blob* addBlob(Blob* blobIn);
 	Blob* addBlob(Point<float> centerIn, float radiusIn, Colour colorIn = Colours::yellow);
+
+	void removeBlob(Blob* blobOut);
+
+	bool changeSelection(Blob* blobSelectedIn);
+
+	Blob* getSelection();
+	int getNumBlobs();
+
+	void triggerNoteOn(int midiChannel, int midiNoteNumber, float velocity);
+	void triggerNoteOff(int midiChannel, int midiNoteNumber, float velocity);
 
 	void paint(Graphics& g) override;
 	void resized() override;

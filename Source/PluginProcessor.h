@@ -65,7 +65,8 @@ private:
     //==============================================================================
 
 	std::unique_ptr<PluginState> pluginState;
-	std::unique_ptr<MidiKeyboardState> keyboardState;
+	MidiKeyboardState keyboardState;
+	MidiBuffer midiBuffer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BlobpluginAudioProcessor)
 };
