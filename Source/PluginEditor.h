@@ -12,6 +12,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "MenuBar.h"
+#include "ColorPickerWindow.h"
 #include "ImageContainer.h"
 #include "BlobLayer.h"
 
@@ -19,6 +21,7 @@
 /**
 */
 class BlobpluginAudioProcessorEditor  : public AudioProcessorEditor,
+										public ApplicationCommandTarget,
 										private MidiKeyboardStateListener,
 										private Button::Listener
 {
@@ -38,6 +41,12 @@ public:
 	//==============================================================================
 		
 	void mouseDown(const MouseEvent& e) override;
+	void mouseDrag(const MouseEvent& e) override;
+	void mouseUp(const MouseEvent& e) override;
+
+	//==============================================================================
+
+	void modifierKeysChanged(const ModifierKeys& modifiers) override;
 
 	//==============================================================================
 
@@ -48,14 +57,34 @@ public:
 
 	void buttonClicked(Button* buttonClicked) override;
 
-private:
+	//==============================================================================
 
+	ApplicationCommandTarget* getNextCommandTarget() override;
+	void getAllCommands(Array< CommandID > &commands) override;
+	void getCommandInfo(CommandID commandID, ApplicationCommandInfo &result) override;
+	bool perform(const InvocationInfo &info) override;
+
+
+private:
+	std::unique_ptr<MenuBarComponent> menuBar;
 	std::unique_ptr<TextButton> loadImageBtn;
+	std::unique_ptr<ColorPickerWindow> colorPickerWindow;
+
+	ApplicationCommandManager appCmdMgr;
+	BlobMenuBar blobMenuModel;
     
 	BlobpluginAudioProcessor& processor;
 	PluginState* pluginState;
 	ImageContainer* latticeImage;
 	BlobLayer* blobLayer;
+
+	// Locks
+	bool shiftHeld = false;
+	bool ctrlHeld = false;
+	bool altHeld = false;
+	//bool rightMouseDown = false;
+
+	int menuBarHeight = 24;
 	
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BlobpluginAudioProcessorEditor)

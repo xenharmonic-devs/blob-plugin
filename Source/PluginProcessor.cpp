@@ -26,6 +26,7 @@ BlobpluginAudioProcessor::BlobpluginAudioProcessor()
 #endif
 {
 	keyboardState = pluginState->getKeyboardState();
+	//pluginState->getAudioDeviceManager()->addMidiInputCallback("", this);
 }
 
 BlobpluginAudioProcessor::~BlobpluginAudioProcessor()
@@ -146,6 +147,7 @@ bool BlobpluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void BlobpluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	midiMessages.addEvents(midiBuffer, 0, -1, 0);
 	auto midiEvent = MidiBuffer::Iterator(midiMessages);
 	MidiMessage msg;
 	int smpl;
@@ -155,7 +157,6 @@ void BlobpluginAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuff
 		keyboardState->processNextMidiEvent(msg);
 	}
 
-	midiMessages.addEvents(midiBuffer, 0, -1, 0);
 	midiBuffer.clear();
 }
 
@@ -189,4 +190,16 @@ void BlobpluginAudioProcessor::setStateInformation (const void* data, int sizeIn
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new BlobpluginAudioProcessor();
+}
+//==============================================================================
+
+void BlobpluginAudioProcessor::numChannelsChanged()
+{
+	pluginState->getAudioDeviceManager()->setDefaultMidiOutput(MidiOutput::getDevices()[MidiOutput::getDefaultDeviceIndex()]);
+	pluginState->getAudioDeviceManager()->setMidiInputEnabled(MidiInput::getDevices()[MidiInput::getDefaultDeviceIndex()], true);
+}
+
+void BlobpluginAudioProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message)
+{
+	midiBuffer.addEvent(message, -1);
 }

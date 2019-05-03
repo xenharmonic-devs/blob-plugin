@@ -17,7 +17,6 @@ class BlobLayer : public Component
 {
 
 	OwnedArray<Blob> blobs;
-	Array<Point<float>> blobPositions;
 	Blob dummy = Blob();
 
 	Blob* blobSelected = &dummy;
@@ -28,9 +27,11 @@ public:
 	~BlobLayer();
 
 	Blob* addBlob(Blob* blobIn);
-	Blob* addBlob(Point<float> centerIn, float radiusIn, Colour colorIn = Colours::yellow);
+	Blob* addBlob(Point<float> centerIn, float radiusIn);
 
 	void removeBlob(Blob* blobOut);
+	void moveBlob(Blob* blobMoved, const MouseEvent& e);
+	void resizeBlob(Blob* blobResized, float newSize);
 
 	bool changeSelection(Blob* blobSelectedIn);
 

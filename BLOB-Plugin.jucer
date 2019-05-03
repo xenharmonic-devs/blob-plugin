@@ -10,6 +10,10 @@
       <FILE id="yxDLnM" name="Tonnetz.png" compile="0" resource="1" file="Resources/Tonnetz.png"/>
     </GROUP>
     <GROUP id="{D32B9AE8-8676-485E-6BAD-8088E2A06CD9}" name="Source">
+      <FILE id="xkjyj0" name="MenuBar.cpp" compile="1" resource="0" file="Source/MenuBar.cpp"/>
+      <FILE id="oT42ct" name="MenuBar.h" compile="0" resource="0" file="Source/MenuBar.h"/>
+      <FILE id="xpoxOM" name="ColorPickerWindow.h" compile="0" resource="0"
+            file="Source/ColorPickerWindow.h"/>
       <FILE id="cGYbxN" name="BlobLayer.cpp" compile="1" resource="0" file="Source/BlobLayer.cpp"/>
       <FILE id="RQuL5k" name="BlobLayer.h" compile="0" resource="0" file="Source/BlobLayer.h"/>
       <FILE id="wiyJTf" name="Blob.cpp" compile="1" resource="0" file="Source/Blob.cpp"/>

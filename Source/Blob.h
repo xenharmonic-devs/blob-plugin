@@ -14,11 +14,11 @@
 
 class Blob : public Component
 {
-
-	Point<float> center;
+	Point<float> center; // the center point of the blob layer
 	float radius;
-	Colour color;
 	int midiNote = -1;
+
+	float alphaDefault = 0.3;
 
 	bool on = false;
 	bool selected = false;
@@ -27,20 +27,21 @@ class Blob : public Component
 public:
 
 	Blob();
-	Blob(Point<float> centerIn, float radiusIn, Colour colorIn = Colours::yellow);
+	Blob(Point<float> centerIn, float radiusIn);
 	Blob(Blob& blobToCopy);
 	
 	Point<float> getCenterPosition();
+	float getAlphaDefault();
 	int getMidiNote();
 	bool isOn();
 	bool isSelected();
 	bool isPlaced();
 
+	void setAlphaDefault(float alphaIn);
+	void setCenter(float xIn, float yIn);
+	void setRadius(float radiusIn);
 	void setMidiNote(int noteIn);
 	void setOn(bool isOnIn = true);
 	void setSelected(bool selectionIn = true);
 	void setPlaced(bool placedIn = true);
-
-	void paint(Graphics& g) override;
-	void resized() override;
 };

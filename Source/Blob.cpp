@@ -14,18 +14,16 @@ Blob::Blob()
 {
 	center = Point<float>();
 	radius = 0;
-	color = Colours::transparentBlack;
-	setColour(0, color);
+	setColour(0, Colours::yellow);
 
 	setBounds(0, 0, 1, 1);
 }
 
-Blob::Blob(Point<float> centerIn, float radiusIn, Colour colorIn)
+Blob::Blob(Point<float> centerIn, float radiusIn)
 {
 	center = centerIn;
 	radius = radiusIn;
-	color = colorIn;
-	setColour(0, color);
+	setColour(0, Colours::yellow);
 
 	setBounds(center.x - radius, center.y - radius, radius * 2, radius * 2);
 }
@@ -34,15 +32,24 @@ Blob::Blob(Blob& blobToCopy)
 {
 	center = blobToCopy.getCenterPosition();
 	radius = blobToCopy.getWidth() / 2.0;
-	color = blobToCopy.findColour(0);
-
+	setColour(0, Colours::yellow);
+	
 	setBounds(center.x - radius, center.y - radius, radius * 2, radius * 2);
 }
 
+void Blob::setCenter(float xIn, float yIn)
+{
+	center = Point<float>(xIn, yIn);
+}
 
 Point<float> Blob::getCenterPosition()
 {
-	return Point<float>(getX() + radius, getY() + radius);
+	return center;
+}
+
+float Blob::getAlphaDefault()
+{
+	return alphaDefault;
 }
 
 int Blob::getMidiNote()
@@ -65,6 +72,17 @@ bool Blob::isPlaced()
 	return placed;
 }
 
+void Blob::setRadius(float radiusIn)
+{
+	radius = radiusIn;
+	setSize(radius * 2, radius * 2);
+}
+
+void Blob::setAlphaDefault(float alphaIn)
+{
+	alphaDefault = alphaIn;
+}
+
 void Blob::setMidiNote(int noteIn)
 {
 	DBG("I'm a blob getting mapped to " + String(noteIn));
@@ -73,11 +91,6 @@ void Blob::setMidiNote(int noteIn)
 
 void Blob::setOn(bool isOnIn)
 {
-	if (isOnIn)
-		DBG("Woo i'm on!");
-	else
-		DBG("Darn I'm off.");
-
 	on = isOnIn;
 }
 
@@ -89,25 +102,4 @@ void Blob::setSelected(bool selectionIn)
 void Blob::setPlaced(bool placedIn)
 {
 	placed = placedIn;
-}
-
-void Blob::paint(Graphics& g)
-{
-	if (!on)
-		g.setColour(color.withAlpha(0.3f));
-	else
-		g.setColour(color.withAlpha(0.6f));
-
-	g.fillEllipse(getBounds().toFloat());
-
-	if (selected)
-	{
-		g.setColour(Colours::black);
-		g.drawRect(getBounds());
-	}
-}
-
-void Blob::resized()
-{
-
 }

@@ -16,7 +16,8 @@
 //==============================================================================
 /**
 */
-class BlobpluginAudioProcessor  : public AudioProcessor
+class BlobpluginAudioProcessor  : public AudioProcessor,
+									public MidiInputCallback
 {
 public:
     //==============================================================================
@@ -60,6 +61,10 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+	//==============================================================================
+	void numChannelsChanged() override;
+	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
 
 private:
     //==============================================================================

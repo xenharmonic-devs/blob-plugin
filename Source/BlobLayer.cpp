@@ -30,20 +30,31 @@ Blob* BlobLayer::addBlob(Blob* blobIn)
 	addAndMakeVisible(blobAdded);
 	changeSelection(blobAdded);
 
-	blobPositions.add(Point<float>(blobAdded->getCenterPosition().x / getWidth(),
-							       blobAdded->getCenterPosition().y / getHeight()));
-
 	return blobAdded;
 }
 
-Blob* BlobLayer::addBlob(Point<float> centerIn, float radiusIn, Colour colorIn)
+Blob* BlobLayer::addBlob(Point<float> centerIn, float radiusIn)
 {
-	return addBlob(new Blob(centerIn, radiusIn, colorIn));
+	return addBlob(new Blob(centerIn, radiusIn));
 }
 
 void BlobLayer::removeBlob(Blob* blobOut)
 {
 	blobs.removeObject(blobOut, true);
+}
+
+void BlobLayer::moveBlob(Blob* blobMoved, const MouseEvent& e)
+{
+	blobMoved->setCenter(e.x / (float)getWidth(), e.y / (float)getHeight());
+	blobMoved->setCentreRelative(blobMoved->getCenterPosition().x, blobMoved->getCenterPosition().y);
+	repaint();
+}
+
+void BlobLayer::resizeBlob(Blob* blobResized, float newSize)
+{
+	blobResized->setRadius(newSize);
+	blobResized->setCentreRelative(blobResized->getCenterPosition().x, blobResized->getCenterPosition().y);
+	repaint();
 }
 
 bool BlobLayer::changeSelection(Blob* blobSelectedIn)
@@ -81,7 +92,7 @@ void BlobLayer::triggerNoteOn(int midiChannel, int midiNoteNumber, float velocit
 	for (int i = 0; i < blobs.size(); i++)
 	{
 		blob = blobs.getUnchecked(i);
-;
+
 		if (blob->getMidiNote() == midiNoteNumber)
 		{
 			DBG("Found matching blob");
@@ -108,14 +119,23 @@ void BlobLayer::triggerNoteOff(int midiChannel, int midiNoteNumber, float veloci
 }
 
 void BlobLayer::paint(Graphics& g)
-{
-	g.setColour(Colours::black);
-	g.drawRect(getBounds());
-
+{	
 	for (auto blob : blobs)
 	{
-		blob->paint(g);
+		if (!blob->isOn())
+			g.setColour(blob->findColour(0).withAlpha(blob->getAlphaDefault()));
+		else
+			g.setColour(blob->findColour(0).withAlpha(1.0f-blob->getAlphaDefault()));
+
+		g.fillEllipse(blob->getBoundsInParent().toFloat());
+
+		if (blob->isSelected())
+		{
+			g.setColour(Colours::black);
+			g.drawRect(blob->getBoundsInParent());
+		}
 	}
+	
 }
 
 void BlobLayer::resized()
@@ -123,7 +143,7 @@ void BlobLayer::resized()
 	int i = 0;
 	for (auto blob : blobs)
 	{
-		blob->setCentreRelative(blobPositions[i].x, blobPositions[i].y);
+		blob->setCentreRelative(blob->getCenterPosition().x, blob->getCenterPosition().y);
 		i++;
 	}
 }
