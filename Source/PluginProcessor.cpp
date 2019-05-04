@@ -174,15 +174,15 @@ AudioProcessorEditor* BlobpluginAudioProcessor::createEditor()
 //==============================================================================
 void BlobpluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    MemoryOutputStream memOut;
+    pluginState->stateNode.writeToStream(memOut);
+    destData.append(memOut.getData(), memOut.getDataSize());
 }
 
 void BlobpluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    MemoryInputStream memIn(data, sizeInBytes, false);
+    pluginState->stateNode.readFromStream(memIn);
 }
 
 //==============================================================================

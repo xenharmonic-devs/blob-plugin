@@ -26,9 +26,9 @@ PopupMenu BlobMenuBar::getMenuForIndex(int topLevelMenuIndex, const String& menu
 
 	if (topLevelMenuIndex == 0)
 	{
-		menu.addCommandItem(appCmdMgr, CommandIDs::saveLayout, "Save layout");
-		menu.addCommandItem(appCmdMgr, CommandIDs::loadLayout, "Load layout");
-		menu.addCommandItem(appCmdMgr, CommandIDs::loadImage, "Load  new \"Lattice\" image.");
+        menu.addCommandItem(appCmdMgr, CommandIDs::loadImage, "Load Lattice Image");
+		menu.addCommandItem(appCmdMgr, CommandIDs::saveLayout, "Save Layout");
+		menu.addCommandItem(appCmdMgr, CommandIDs::loadLayout, "Open Layout");
 	}
 	else if (topLevelMenuIndex == 1)
 	{

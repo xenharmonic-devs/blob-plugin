@@ -1,49 +1,34 @@
-
-
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "PluginIDs.h"
 #include "ImageContainer.h"
 #include "BlobLayer.h"
 
 
 class PluginState
 {
-
 	std::unique_ptr<ImageContainer> latticeImage;
 	std::unique_ptr<BlobLayer> blobLayer;
 
 	AudioDeviceManager deviceManager;
+    ApplicationCommandManager appCmdMgr;
 	MidiKeyboardState keyboardState;
 
 public:
 	PluginState();
 	~PluginState();
+    
+    bool loadLayout(ValueTree nodeIn);
+    bool saveLayout();
+    
+    void resetBlobLayer();
 
 	ImageContainer* getLatticeImage();
 	BlobLayer* getBlobLayer();
 
 	MidiKeyboardState* getKeyboardState();
 	AudioDeviceManager* getAudioDeviceManager();
+    ApplicationCommandManager* getAppCmdMgr();
+    
+    ValueTree stateNode;
 };
-
-enum CommandIDs
-{
-	saveLayout = 1,
-	loadLayout,
-	loadImage,
-	showColorPicker
-};
-
-namespace IDs
-{
-	static Identifier stateNode("StateNode");
-	static Identifier imagePath("ImagePath");
-
-	static Identifier blobLayerNode("BlobLayerNode");
-
-	static Identifier blobNode("BlobNode");
-	static Identifier blobCenter("BlobCenter");
-	static Identifier blobRadius("BlobRadius");
-	static Identifier blobColor("BlobColor");
-	static Identifier blobAlpha("BlobAlpha");
-}

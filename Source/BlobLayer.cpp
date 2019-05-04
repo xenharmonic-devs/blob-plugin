@@ -12,14 +12,37 @@
 
 BlobLayer::BlobLayer()
 {
-	setOpaque(false);
-	
 	setSize(50, 50);
+    blobLayerNode = ValueTree(IDs::blobLayerNode);
 }
 
 BlobLayer::~BlobLayer()
 {
 
+}
+
+BlobLayer::BlobLayer(ValueTree nodeIn)
+{
+    blobLayerNode = ValueTree(IDs::blobLayerNode);
+
+    if (nodeIn.hasType(IDs::blobLayerNode))
+    {
+        for (auto blob : nodeIn)
+        {
+            addBlob(new Blob(blob));
+        }
+        
+        setSize(50, 50);
+    }
+    else
+        BlobLayer();
+}
+
+void BlobLayer::reset()
+{
+    blobs.clear();
+    deleteAllChildren();
+    blobSelected = &dummy;
 }
 
 Blob* BlobLayer::addBlob(Blob* blobIn)
@@ -29,23 +52,32 @@ Blob* BlobLayer::addBlob(Blob* blobIn)
 	blobAdded->setName("Blob " + String(blobAdded->getCenterPosition().toString()));
 	addAndMakeVisible(blobAdded);
 	changeSelection(blobAdded);
+    
+    if (!blobAdded->blobNode.isValid())
+        int a = 0;
+    
+    blobLayerNode.addChild(blobAdded->blobNode, blobAdded->getIndex(), nullptr);
 
 	return blobAdded;
 }
 
-Blob* BlobLayer::addBlob(Point<float> centerIn, float radiusIn)
+Blob* BlobLayer::addBlob(Point<float> centerIn, float radiusIn, Colour colorIn)
 {
-	return addBlob(new Blob(centerIn, radiusIn));
+	return addBlob(new Blob(centerIn, radiusIn, colorIn, getNumChildComponents()));
 }
 
 void BlobLayer::removeBlob(Blob* blobOut)
 {
-	blobs.removeObject(blobOut, true);
+    if (blobOut)
+    {
+        blobLayerNode.removeChild(blobOut->blobNode, nullptr);
+        blobs.removeObject(blobOut, true);
+    }
 }
 
 void BlobLayer::moveBlob(Blob* blobMoved, const MouseEvent& e)
 {
-	blobMoved->setCenter(e.x / (float)getWidth(), e.y / (float)getHeight());
+    blobMoved->setCenter(e.x / (float)getWidth(), e.y / (float)getHeight());
 	blobMoved->setCentreRelative(blobMoved->getCenterPosition().x, blobMoved->getCenterPosition().y);
 	repaint();
 }
@@ -95,7 +127,6 @@ void BlobLayer::triggerNoteOn(int midiChannel, int midiNoteNumber, float velocit
 
 		if (blob->getMidiNote() == midiNoteNumber)
 		{
-			DBG("Found matching blob");
 			blob->setOn();
 			blob->repaint();
 		}

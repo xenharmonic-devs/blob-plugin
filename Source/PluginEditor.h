@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "PluginIDs.h"
 #include "MenuBar.h"
 #include "ColorPickerWindow.h"
 #include "ImageContainer.h"
@@ -23,13 +24,17 @@
 class BlobpluginAudioProcessorEditor  : public AudioProcessorEditor,
 										public ApplicationCommandTarget,
 										private MidiKeyboardStateListener,
-										private Button::Listener
+										private Button::Listener,
+                                        private ChangeListener
 {
 public:
     BlobpluginAudioProcessorEditor (BlobpluginAudioProcessor&);
     ~BlobpluginAudioProcessorEditor();
 
 	//==============================================================================
+    
+    bool loadLayout();
+    bool saveLayout();
 
 	void setPlayMode();
 	void setLoadMode();
@@ -50,12 +55,13 @@ public:
 
 	//==============================================================================
 
-	void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity);
-	void handleNoteOff(MidiKeyboardState* source,int midiChannel, int midiNoteNumber, float velocity);
+	void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
+	void handleNoteOff(MidiKeyboardState* source,int midiChannel, int midiNoteNumber, float velocity) override;
 
 	//==============================================================================
 
 	void buttonClicked(Button* buttonClicked) override;
+    void changeListenerCallback(ChangeBroadcaster* source) override;
 
 	//==============================================================================
 
@@ -70,7 +76,7 @@ private:
 	std::unique_ptr<TextButton> loadImageBtn;
 	std::unique_ptr<ColorPickerWindow> colorPickerWindow;
 
-	ApplicationCommandManager appCmdMgr;
+	ApplicationCommandManager* appCmdMgr;
 	BlobMenuBar blobMenuModel;
     
 	BlobpluginAudioProcessor& processor;

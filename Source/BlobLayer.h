@@ -17,17 +17,21 @@ class BlobLayer : public Component
 {
 
 	OwnedArray<Blob> blobs;
-	Blob dummy = Blob();
+    Blob dummy;
 
 	Blob* blobSelected = &dummy;
 
 public:
 
 	BlobLayer();
+    BlobLayer(ValueTree nodeIn);
 	~BlobLayer();
+    
+    ValueTree blobLayerNode;
+    void reset();
 
 	Blob* addBlob(Blob* blobIn);
-	Blob* addBlob(Point<float> centerIn, float radiusIn);
+    Blob* addBlob(Point<float> centerIn, float radiusIn, Colour colorIn);
 
 	void removeBlob(Blob* blobOut);
 	void moveBlob(Blob* blobMoved, const MouseEvent& e);

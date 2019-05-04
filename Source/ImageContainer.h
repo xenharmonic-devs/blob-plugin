@@ -34,5 +34,6 @@ public:
 
 	bool loadFile(File fileIn);
 	bool browseAndLoad();
-
+    
+    String getImagePath();
 };

@@ -13,9 +13,9 @@
 
 //==============================================================================
 BlobpluginAudioProcessorEditor::BlobpluginAudioProcessorEditor (BlobpluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), blobMenuModel(&appCmdMgr)
+    : AudioProcessorEditor (&p), processor (p), blobMenuModel(p.getPluginState()->getAppCmdMgr())
 {
-	pluginState = processor.getPluginState();
+    pluginState = processor.getPluginState();
 	latticeImage = pluginState->getLatticeImage();
 
 	menuBar.reset(new MenuBarComponent(&blobMenuModel));
@@ -31,13 +31,22 @@ BlobpluginAudioProcessorEditor::BlobpluginAudioProcessorEditor (BlobpluginAudioP
 	addChildComponent(blobLayer);
 
 	colorPickerWindow.reset(new ColorPickerWindow);
+    addChildComponent(colorPickerWindow.get());
 	colorPickerWindow->addToDesktop();
+    colorPickerWindow.get()->registerListener(this);
 
 	processor.getKeyboardState()->addListener(this);
 	addMouseListener(this, true);
 	setRepaintsOnMouseActivity(true);
-
-	appCmdMgr.registerAllCommandsForTarget(this);
+    
+    appCmdMgr = pluginState->getAppCmdMgr();
+    appCmdMgr->setFirstCommandTarget(this);
+    appCmdMgr->registerAllCommandsForTarget(this);
+    
+    if (pluginState->stateNode.hasProperty(IDs::imagePath))
+    {
+        setPlayMode();
+    }
 
     setSize (800, 500 + menuBarHeight);
 }
@@ -48,10 +57,41 @@ BlobpluginAudioProcessorEditor::~BlobpluginAudioProcessorEditor()
 	menuBar->setModel(nullptr);
 }
 
+//==============================================================================
+
+bool BlobpluginAudioProcessorEditor::loadLayout()
+{
+    FileChooser chooser("Load your layout...", File::getSpecialLocation(File::userDocumentsDirectory), "*.blob");
+    chooser.browseForFileToOpen();
+    
+    File fileToLoad = File(chooser.getResult());
+    
+    if (fileToLoad.exists())
+    {
+        std::unique_ptr<XmlElement> xml = parseXML(chooser.getResult());
+    
+        if (pluginState->loadLayout(ValueTree::fromXml(*(xml.get()))))
+        {
+            removeChildComponent(blobLayer);
+            blobLayer = pluginState->getBlobLayer();
+            addChildComponent(blobLayer);
+            setPlayMode();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool BlobpluginAudioProcessorEditor::saveLayout()
+{
+    return pluginState->saveLayout();
+}
+
 void BlobpluginAudioProcessorEditor::setPlayMode()
 {
 	loadImageBtn->setVisible(false);
 	blobLayer->setVisible(true);
+    blobLayer->changeSelection(nullptr);
 	setSize(latticeImage->getImage().getWidth(), latticeImage->getImage().getHeight() + menuBarHeight);
 }
 
@@ -93,12 +133,16 @@ void BlobpluginAudioProcessorEditor::mouseDown(const MouseEvent& e)
 		if (!e.mods.isRightButtonDown() && ctrlHeld)
 		{
 			if (!blobClicked)
-				blobLayer->addBlob(e.mouseDownPosition, 10);
+				blobLayer->addBlob(e.mouseDownPosition, 15, colorPickerWindow->getColor());
 		}
 
 		else if (!e.mods.isRightButtonDown())
+        {
 			blobLayer->changeSelection(blobClicked);
-
+            
+            if (blobClicked)
+                colorPickerWindow->setColor(blobClicked->findColour(0).withAlpha(blobClicked->getAlphaDefault()));
+        }
 		else
 		{
 			blobLayer->removeBlob(blobClicked);
@@ -106,7 +150,6 @@ void BlobpluginAudioProcessorEditor::mouseDown(const MouseEvent& e)
 		}
 
 		blobLayer->repaint();
-		DBG(blobLayer->getNumBlobs());
 	}
 }
 
@@ -190,19 +233,42 @@ void BlobpluginAudioProcessorEditor::buttonClicked(Button* buttonClicked)
 	{
 		if (latticeImage->browseAndLoad())
 		{
+            pluginState->stateNode.setProperty(IDs::imagePath, latticeImage->getImagePath(), nullptr);
+            removeChildComponent(blobLayer);
+            pluginState->resetBlobLayer();
+            blobLayer = pluginState->getBlobLayer();
+            addChildComponent(blobLayer);
 			setPlayMode();
 		}
 	}
 }
 
+void BlobpluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster* source)
+{
+    Component* c = dynamic_cast<Component*>(source);
+    
+    if (c->getName() == "The Color Picker")
+    {
+        Blob* blobSelected = blobLayer->getSelection();
+        
+        if (blobSelected)
+        {
+            blobSelected->setColor(colorPickerWindow->getColor().withAlpha(0.0f));
+            blobSelected->setAlphaDefault(colorPickerWindow->getColor().getFloatAlpha());
+            blobSelected->repaint();
+        }
+    }
+}
+
+//==============================================================================
+
+
 void BlobpluginAudioProcessorEditor::handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
 	Blob* blobToMap = blobLayer->getSelection();
 	
-	DBG("On" + String(midiNoteNumber));
 	if (blobToMap)
 	{
-		DBG("mapping blob");
 		blobToMap->setMidiNote(midiNoteNumber);
 	}
 
@@ -211,7 +277,6 @@ void BlobpluginAudioProcessorEditor::handleNoteOn(MidiKeyboardState* source, int
 
 void BlobpluginAudioProcessorEditor::handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
-	DBG("Off" + String(midiNoteNumber));
 	blobLayer->triggerNoteOff(midiChannel, midiNoteNumber, velocity);
 }
 
@@ -220,7 +285,7 @@ void BlobpluginAudioProcessorEditor::handleNoteOff(MidiKeyboardState* source, in
 
 ApplicationCommandTarget* BlobpluginAudioProcessorEditor::getNextCommandTarget()
 {
-	return this;
+	return findFirstTargetParentComponent();
 }
 
 void BlobpluginAudioProcessorEditor::getAllCommands(Array< CommandID > &c)
@@ -261,10 +326,10 @@ bool BlobpluginAudioProcessorEditor::perform(const InvocationInfo &info)
 	switch (info.commandID)
 	{
 	case CommandIDs::saveLayout:
-		
+            saveLayout();
 		break;
 	case CommandIDs::loadLayout:
-		
+            loadLayout();
 		break;
 	case CommandIDs::showColorPicker:
 		colorPickerWindow->setVisible(true);
@@ -276,5 +341,5 @@ bool BlobpluginAudioProcessorEditor::perform(const InvocationInfo &info)
 		break;
 	}
 
-	return false;
+	return true;
 }

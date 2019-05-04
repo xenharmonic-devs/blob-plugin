@@ -64,7 +64,7 @@ public:
 
 	//==============================================================================
 	void numChannelsChanged() override;
-	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
+	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override;
 
 private:
     //==============================================================================

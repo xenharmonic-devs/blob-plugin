@@ -10,6 +10,7 @@
       <FILE id="yxDLnM" name="Tonnetz.png" compile="0" resource="1" file="Resources/Tonnetz.png"/>
     </GROUP>
     <GROUP id="{D32B9AE8-8676-485E-6BAD-8088E2A06CD9}" name="Source">
+      <FILE id="JjXIPz" name="PluginIDs.h" compile="0" resource="0" file="Source/PluginIDs.h"/>
       <FILE id="xkjyj0" name="MenuBar.cpp" compile="1" resource="0" file="Source/MenuBar.cpp"/>
       <FILE id="oT42ct" name="MenuBar.h" compile="0" resource="0" file="Source/MenuBar.h"/>
       <FILE id="xpoxOM" name="ColorPickerWindow.h" compile="0" resource="0"
@@ -29,8 +30,6 @@
       <FILE id="RdCtsx" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="LFlN3U" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="JK65hD" name="Preset.cpp" compile="1" resource="0" file="Source/Preset.cpp"/>
-      <FILE id="t2tvAv" name="Preset.h" compile="0" resource="0" file="Source/Preset.h"/>
       <FILE id="kNzydV" name="PluginState.cpp" compile="1" resource="0" file="Source/PluginState.cpp"/>
       <FILE id="HGouu7" name="PluginState.h" compile="0" resource="0" file="Source/PluginState.h"/>
     </GROUP>
@@ -122,6 +121,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>
+    <OSX/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>

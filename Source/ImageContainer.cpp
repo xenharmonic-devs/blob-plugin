@@ -40,7 +40,6 @@ bool ImageContainer::browseAndLoad()
 
 	if (loadFile(fileChooser->getResult()))
 	{
-		ImageComponent::setImage(theImage);
 		return true;
 	}
 	return false;
@@ -50,28 +49,40 @@ bool ImageContainer::loadFile(File fileIn)
 {
 	imageFile = fileIn;
 	imagePath = imageFile.getFullPathName();
+    
+    Image newImage;
 
 	// attempt to load file
 	inputStream.reset(new FileInputStream(imageFile));
 
 	if (jpegFormat.usesFileExtension(imageFile))
 	{
-		theImage = jpegFormat.decodeImage(*inputStream.get());
-		return true;
+		newImage = jpegFormat.decodeImage(*inputStream.get());
 	}
 	else if (pngFormat.usesFileExtension(imageFile))
 	{
-		theImage = pngFormat.decodeImage(*inputStream.get());
-		return true;
+		newImage = pngFormat.decodeImage(*inputStream.get());
 	}
 	else if (gifFormat.usesFileExtension(imageFile))
 	{
-		theImage = gifFormat.decodeImage(*inputStream.get());
-		return true;
+		newImage = gifFormat.decodeImage(*inputStream.get());
 	}
 	else
 	{
 		// do something
 	}
+    
+    if (newImage.isValid())
+    {
+        theImage = newImage;
+        ImageComponent::setImage(theImage);
+        return true;
+    }
+    
 	return false;
+}
+
+String ImageContainer::getImagePath()
+{
+    return imagePath;
 }
